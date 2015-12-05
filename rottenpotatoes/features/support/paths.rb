@@ -13,9 +13,35 @@ module NavigationHelpers
   def path_to(page_name)
     case page_name
 
-    when /^the home\s?page$/
-      '/'
-
+    when /^the (RottenPotatoes )?home\s?page$/ then '/movies'
+    when /^the movies page$/ then '/movies'
+    # when /^the (.*?) (page|form) for "(.*?)"$/
+    #   title = $1, $2, $3
+    #   edit_movie_path Movie.find_by_title!(title)
+    
+    when /^the details page for "(.+)"$/
+      movie = Movie.find_by(title: $1)
+      movie_path(movie)
+    when /^the edit page for "([^"]*)"$/
+      movie = Movie.find_by(title: $1)
+      movie_path(movie) + '/edit'
+      
+    # when /^the details page for "(.+)"$/
+    #   movie = Movie.find_by(title: $1)
+    #   movie_path(movie)
+    when /^the Similar Movies page for "(.+)"$/
+      movie = Movie.find_by(title: $1)
+      same_director_path(movie)
+    # else
+    #   begin
+    #     page_name =~ /^the (.*) page$/
+    #     path_components = $1.split(/\s+/)
+    #     self.send(path_components.push('path').join('_').to_sym)
+    #   rescue NoMethodError, ArgumentError
+    #     raise "Can't find mapping from \"#{page_name}\" to a path.\n" +
+    #       "Now, go and add a mapping in #{__FILE__}"
+    #   end
+    # end  
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
     #
@@ -33,6 +59,19 @@ module NavigationHelpers
       end
     end
   end
+  
+  
+  private
+
+  def path_to_show_or_edit(action_prose, model_prose, identifier)
+    
+  end
+
+  def model_prose_to_route_segment(model_prose)
+    model_prose.gsub(/[\ \/]/, '_')
+  end
+
 end
+  
 
 World(NavigationHelpers)
